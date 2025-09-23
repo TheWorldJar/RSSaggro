@@ -6,8 +6,8 @@ function main() {
     const run = process.argv.slice(2);
     try {
         runCommand(commands, run[0], ...run.slice(1));
-    } catch (error) {
-        console.error(error.message);
+    } catch (error: any) {
+        console.error(error?.message);
         process.exit(1);
     }
 }
