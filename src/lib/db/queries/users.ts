@@ -13,5 +13,9 @@ export async function getUser(name: string){
 }
 
 export async function resetUsers() {
-    await db.execute(sql`TRUNCATE TABLE users`);
+    await db.execute(sql`TRUNCATE TABLE ${users}`);
+}
+
+export async function getUsers(){
+    return db.select({name: users.name}).from(users);
 }

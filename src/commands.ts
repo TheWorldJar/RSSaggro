@@ -1,5 +1,5 @@
-import {setUser} from "./config.js";
-import {createUser, getUser, resetUsers} from "./lib/db/queries/users";
+import {readConfig, setUser} from "./config.js";
+import {createUser, getUser, getUsers, resetUsers} from "./lib/db/queries/users";
 
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
 
@@ -17,7 +17,7 @@ export async function runCommand(registry: CommandsRegistry, cmdName: string, ..
     }
 }
 
-export async function handlerLogin(cmdName: string, ...args: string[]) {
+export async function handlerLogin(_: string, ...args: string[]) {
     if (args.length < 1) {
         throw new Error("Missing argument: specify a username");
     }
@@ -28,17 +28,27 @@ export async function handlerLogin(cmdName: string, ...args: string[]) {
     console.log(`Successfully logged in as ${args[0]}`);
 }
 
-export async function handlerRegister(cmdName: string, ...args: string[]) {
+export async function handlerRegister(_: string, ...args: string[]) {
     if (args.length < 1) {
         throw new Error("Missing argument: specify a username");
     }
     const result = await createUser(args[0]);
     console.log(`Successfully created user ${result.name}`);
-    await handlerLogin(cmdName, args[0]);
+    await handlerLogin(_, args[0]);
 }
 
-export async function handlerReset(_: string, ...args: string[]) {
+export async function handlerReset(_: string) {
     await resetUsers();
     console.log(`Successfully reset users!`);
 }
 
+export async function handlerUsers(_: string) {
+    const users = await getUsers();
+    for (const user of users) {
+        if (user.name === readConfig().currentUserName) {
+            console.log(`* ${user.name} (current)`);
+        } else {
+            console.log(`* ${user.name}`);
+        }
+    }
+}
