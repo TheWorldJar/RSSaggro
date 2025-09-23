@@ -1,15 +1,21 @@
-import {CommandsRegistry, handlerLogin, registerCommand, runCommand} from "./commands.js";
+import {CommandsRegistry, handlerLogin, handlerRegister, registerCommand, runCommand} from "./commands.js";
 
-function main() {
+async function main() {
     const commands: CommandsRegistry = {};
     registerCommand(commands, 'login', handlerLogin);
+    registerCommand(commands, 'register', handlerRegister);
     const run = process.argv.slice(2);
     try {
-        runCommand(commands, run[0], ...run.slice(1));
+        await runCommand(commands, run[0], ...run.slice(1));
     } catch (error: any) {
-        console.error(error?.message);
+        if (error?.cause?.code === '23505') {
+            console.error(`User already exists!`);
+        } else {
+            console.error(error?.message);
+        }
         process.exit(1);
     }
+    process.exit(0);
 }
 
-main();
+await main();
