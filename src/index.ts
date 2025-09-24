@@ -1,5 +1,8 @@
 import {
     CommandsRegistry,
+    handlerAddFeed,
+    handlerAgg,
+    handlerFeeds,
     handlerLogin,
     handlerRegister,
     handlerReset,
@@ -14,12 +17,15 @@ async function main() {
     registerCommand(commands, 'register', handlerRegister);
     registerCommand(commands, 'reset', handlerReset);
     registerCommand(commands, 'users', handlerUsers);
+    registerCommand(commands, 'agg', handlerAgg);
+    registerCommand(commands, 'addfeed', handlerAddFeed);
+    registerCommand(commands, 'feeds', handlerFeeds);
     const run = process.argv.slice(2);
     try {
         await runCommand(commands, run[0], ...run.slice(1));
     } catch (error: any) {
         if (error?.cause?.code === '23505') {
-            console.error(`User already exists!`);
+            console.error(`That already exists!`);
         } else {
             console.error(error?.message);
         }
