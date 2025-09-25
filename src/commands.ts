@@ -1,7 +1,8 @@
 import {readConfig, setUser} from "./config.js";
-import {createUser, getUser, getUsers, resetUsers} from "./lib/db/queries/users";
+import {createUser, getUser, getUserId, getUsers, resetUsers} from "./lib/db/queries/users";
 import {fetchFeed} from "./RSSFeed";
-import {createFeed, getFeeds} from "./lib/db/queries/feeds";
+import {createFeed, getFeedId, getFeeds} from "./lib/db/queries/feeds";
+import {createFeedFollow, getFeedFollowForUser} from "./lib/db/queries/feedfollow";
 
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
 
@@ -65,9 +66,10 @@ export async function handlerAddFeed(_: string, ...args: string[]) {
     if (args.length < 2) {
         throw new Error("Missing argument(s): addfeed {name} {url}");
     }
-    const user = await getUser(readConfig().currentUserName);
-    const result = await createFeed(args[0], args[1], user.id);
+    const userId = await getUserId(readConfig().currentUserName);
+    const result = await createFeed(args[0], args[1], userId);
     console.log(`Successfully added feed: ${result.name}`);
+    await handlerFollow(_, args[1], userId, result.id);
 }
 
 export async function handlerFeeds(_: string) {
@@ -77,4 +79,22 @@ export async function handlerFeeds(_: string) {
             console.log(`* Title: ${item.feeds.name} / URL: ${item.feeds.url} / User: ${item.users.name}`);
         }
     }
+}
+
+export async function handlerFollow(_: string, ...args: string[]) {
+    if (args.length < 1) {
+        throw new Error("Missing argument: specify a url to follow");
+    }
+    const userId = args.length > 1 ? args[1] : await getUserId(readConfig().currentUserName);
+    const feedId = args.length > 2 ? args[2] : await getFeedId(args[0]);
+    const result = await createFeedFollow(userId, feedId);
+    console.log(result);
+}
+
+export async function handlerFollowing(_: string) {
+    const userId = await getUserId(readConfig().currentUserName);
+    const result = await getFeedFollowForUser(userId);
+    result.forEach((item) => {
+        console.log(`* ${item.feeds}`);
+    })
 }

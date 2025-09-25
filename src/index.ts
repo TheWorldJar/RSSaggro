@@ -3,6 +3,8 @@ import {
     handlerAddFeed,
     handlerAgg,
     handlerFeeds,
+    handlerFollow,
+    handlerFollowing,
     handlerLogin,
     handlerRegister,
     handlerReset,
@@ -17,8 +19,10 @@ async function main() {
         'reset': handlerReset,
         'users': handlerUsers,
         'agg': handlerAgg,
-        'addFeed': handlerAddFeed,
+        'addfeed': handlerAddFeed,
         'feeds': handlerFeeds,
+        'follow': handlerFollow,
+        'following': handlerFollowing,
     };
     const run = process.argv.slice(2);
     try {
