@@ -7,19 +7,19 @@ import {
     handlerRegister,
     handlerReset,
     handlerUsers,
-    registerCommand,
     runCommand
 } from "./commands.js";
 
 async function main() {
-    const commands: CommandsRegistry = {};
-    registerCommand(commands, 'login', handlerLogin);
-    registerCommand(commands, 'register', handlerRegister);
-    registerCommand(commands, 'reset', handlerReset);
-    registerCommand(commands, 'users', handlerUsers);
-    registerCommand(commands, 'agg', handlerAgg);
-    registerCommand(commands, 'addfeed', handlerAddFeed);
-    registerCommand(commands, 'feeds', handlerFeeds);
+    const commands: CommandsRegistry = {
+        'login': handlerLogin,
+        'register': handlerRegister,
+        'reset': handlerReset,
+        'users': handlerUsers,
+        'agg': handlerAgg,
+        'addFeed': handlerAddFeed,
+        'feeds': handlerFeeds,
+    };
     const run = process.argv.slice(2);
     try {
         await runCommand(commands, run[0], ...run.slice(1));
